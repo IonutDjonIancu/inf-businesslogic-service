@@ -1,0 +1,26 @@
+{
+  "name": "inf-businesslogic-service",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IonutDjonIancu/inf-businesslogic-service.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IonutDjonIancu/inf-businesslogic-service/issues"
+  },
+  "homepage": "https://github.com/IonutDjonIancu/inf-businesslogic-service#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "node-fetch": "^3.2.3"
+  }
+}
