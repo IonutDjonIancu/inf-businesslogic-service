@@ -103,7 +103,7 @@ app.put('/UpdatePortfolio', (req, res) => {
 
 // stocks
 app.post('/CreateStock', (req, res) => {
-    
+
     fetch(dataServiceUrl.concat('GetPortfolioById/'.concat(req.body.portfolioid)))
         .then(res => res.json())
         .then(obj => {
@@ -130,8 +130,6 @@ app.post('/CreateStock', (req, res) => {
                     res.status(200).json(obj);
                 })
                 .catch((err) => {res.status(500).json(err)});
-
-
             } else {
 
                 const newStock = {
