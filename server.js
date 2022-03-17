@@ -104,28 +104,61 @@ app.put('/UpdatePortfolio', (req, res) => {
 // stocks
 app.post('/CreateStock', (req, res) => {
     
-    const obj = {
-        symbol: req.body.symbol,
-        name: req.body.name,
-        price: req.body.price,
-        quantity: req.body.quantity,
-        bought: req.body.bought,
-        current: req.body.current,
-        yield: req.body.yield,
-        portfolioid: req.body.portfolioid
-    };
-
-    fetch(dataServiceUrl.concat('CreateStock'), {
-            method: 'POST',
-            rejectUnhauthorized : false,
-            body: JSON.stringify(JSON.stringify(obj)),
-            headers: { 'Content-Type': 'application/json' }
-        })
+    fetch(dataServiceUrl.concat('GetPortfolioById/'.concat(req.body.portfolioid)))
         .then(res => res.json())
         .then(obj => {
-            res.status(200).json(obj);
+
+            const portfolioStocks = obj.stocks;
+
+            var stock = portfolioStocks.find(s => s.symbol === req.body.symbol);
+
+            if(stock) {
+                stock.price = req.body.price;
+                stock.quantity++;
+                stock.bought++;
+                stock.current = req.body.price;
+                stock.yield = calculateYield(req.body.price);
+
+                fetch(dataServiceUrl.concat('UpdateStock'), {
+                    method: 'PUT',
+                    rejectUnhauthorized : false,
+                    body: JSON.stringify(JSON.stringify(stock)),
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res => res.json())
+                .then(obj => {
+                    res.status(200).json(obj);
+                })
+                .catch((err) => {res.status(500).json(err)});
+
+
+            } else {
+
+                const newStock = {
+                    symbol: req.body.symbol,
+                    name: req.body.name,
+                    price: req.body.price,
+                    quantity: 1,
+                    bought: 1,
+                    current: req.body.price,
+                    yield: 0,
+                    portfolioid: obj.guid
+                }
+
+                fetch(dataServiceUrl.concat('CreateStock'), {
+                    method: 'POST',
+                    rejectUnhauthorized : false,
+                    body: JSON.stringify(JSON.stringify(newStock)),
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res => res.json())
+                .then(obj => {
+                    res.status(200).json(obj);
+                })
+                .catch((err) => {res.status(500).json(err)});
+            }
         })
-        .catch((err) => {res.status(500).json(err)});
+        .catch(() => {res.status(500).json('data service server returned an error')});
 });
 
 app.put('/UpdateStock', (req, res) => {
@@ -185,15 +218,14 @@ app.delete('/DeleteStock', (req, res) => {
 });
 
 
+// privates
 
+const calculateYield = (newPrice) => {
 
+    const value = 10 / newPrice * 100;
 
-
-
-
-
-
-
+    return Math.round( value * 100 + Number.EPSILON ) / 100;
+}
 
 
 // serve
